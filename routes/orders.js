@@ -15,6 +15,29 @@ const ORDERS_FILE = path.join(__dirname, '..', 'orders.json');
 function readOrders()         { return JSON.parse(fs.readFileSync(ORDERS_FILE, 'utf-8')); }
 function writeOrders(orders)  { fs.writeFileSync(ORDERS_FILE, JSON.stringify(orders, null, 2)); }
 
+function normalizeOrderItems(items) {
+    const normalized = {};
+    for (const key of Object.keys(items)) {
+        const cleanName = String(key).trim();
+        if (!cleanName) continue;
+
+        const existing = normalized[cleanName];
+        const quantity = Number(items[key].quantity || 0);
+        const price = Number(items[key].price || 0);
+
+        if (existing) {
+            // Merge quantities when duplicate names appear (after trimming)
+            normalized[cleanName].quantity = existing.quantity + quantity;
+        } else {
+            normalized[cleanName] = {
+                quantity: Number.isFinite(quantity) ? quantity : 0,
+                price: Number.isFinite(price) ? price : 0,
+            };
+        }
+    }
+    return normalized;
+}
+
 // ──────────────────────────────────────────────────────────────────
 // GET /api/orders
 // Supports ?search=&dateFilter=today|7days&sort=asc|desc
@@ -86,11 +109,16 @@ router.post('/', (req, res, next) => {
             finalTotal,
         } = req.body;
 
+        const normalizedItems = normalizeOrderItems(items);
+        if (Object.keys(normalizedItems).length === 0) {
+            return res.status(400).json({ success: false, message: 'Order items cannot be empty after normalization.' });
+        }
+
         const orders   = readOrders();
         const newOrder = {
             id:             Date.now(),
             timestamp:      new Date().toISOString(),
-            items,
+            items:          normalizedItems,
             subtotal:       parseFloat(subtotal).toFixed(2),
             discount:       parseFloat(discount).toFixed(2),
             discountType,
