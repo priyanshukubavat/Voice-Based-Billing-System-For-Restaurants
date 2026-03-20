@@ -1,0 +1,255 @@
+[
+  {
+    "id": 1773683505896,
+    "timestamp": "2026-03-16T17:51:45.896Z",
+    "items": {
+      "burger": {
+        "quantity": 2,
+        "price": 8.99
+      },
+      "cola": {
+        "quantity": 1,
+        "price": 2.49
+      }
+    },
+    "grandTotal": "20.47"
+  },
+  {
+    "id": 1773683669932,
+    "timestamp": "2026-03-16T17:54:29.932Z",
+    "items": {
+      "burger": {
+        "price": 8.99,
+        "quantity": 4
+      },
+      "pasta": {
+        "price": 11.99,
+        "quantity": 1
+      },
+      "cola": {
+        "price": 2.49,
+        "quantity": 1
+      }
+    },
+    "grandTotal": "50.44"
+  },
+  {
+    "id": 1773714938739,
+    "timestamp": "2026-03-17T02:35:38.739Z",
+    "items": {
+      "pizza": {
+        "price": 12.99,
+        "quantity": 1
+      }
+    },
+    "grandTotal": "13.64"
+  },
+  {
+    "id": 1773715820692,
+    "timestamp": "2026-03-17T02:50:20.692Z",
+    "items": {
+      "burger": {
+        "price": 8.99,
+        "quantity": 3
+      }
+    },
+    "grandTotal": "28.32"
+  },
+  {
+    "id": 1773715826836,
+    "timestamp": "2026-03-17T02:50:26.836Z",
+    "items": {
+      "pizza": {
+        "price": 12.99,
+        "quantity": 4
+      }
+    },
+    "grandTotal": "54.56"
+  },
+  {
+    "id": 1773716000023,
+    "timestamp": "2026-03-17T02:53:20.023Z",
+    "items": {
+      "water": {
+        "price": 1.99,
+        "quantity": 1
+      }
+    },
+    "grandTotal": "2.09"
+  },
+  {
+    "id": 1773716093164,
+    "timestamp": "2026-03-17T02:54:53.164Z",
+    "items": {
+      "cheeseburger": {
+        "price": 9.99,
+        "quantity": 2
+      }
+    },
+    "grandTotal": "20.98"
+  },
+  {
+    "id": 1773931315226,
+    "timestamp": "2026-03-19T14:41:55.226Z",
+    "items": {
+      "burger": {
+        "price": 149,
+        "quantity": 1
+      },
+      "sandwich": {
+        "price": 99,
+        "quantity": 1
+      },
+      "pasta": {
+        "price": 199,
+        "quantity": 1
+      },
+      "coffee": {
+        "price": 69,
+        "quantity": 1
+      }
+    },
+    "grandTotal": "541.80"
+  },
+  {
+    "id": 1773975010104,
+    "timestamp": "2026-03-20T02:50:10.104Z",
+    "items": {
+      "burger": {
+        "price": 149,
+        "quantity": 1
+      },
+      "cheeseburger": {
+        "price": 179,
+        "quantity": 1
+      },
+      "sandwich": {
+        "price": 99,
+        "quantity": 1
+      }
+    },
+    "grandTotal": "448.35"
+  },
+  {
+    "id": 1773975394524,
+    "timestamp": "2026-03-20T02:56:34.524Z",
+    "items": {
+      "coffee": {
+        "price": 69,
+        "quantity": 1
+      },
+      "burger": {
+        "price": 149,
+        "quantity": 1
+      }
+    },
+    "grandTotal": "228.90"
+  },
+  {
+    "id": 1773978851920,
+    "timestamp": "2026-03-20T03:54:11.920Z",
+    "items": {
+      "burger": {
+        "price": 149,
+        "quantity": 1
+      },
+      "sandwich": {
+        "price": 99,
+        "quantity": 1
+      },
+      "water": {
+        "price": 25,
+        "quantity": 1
+      },
+      "coffee": {
+        "price": 69,
+        "quantity": 1
+      }
+    },
+    "subtotal": "342.00",
+    "discount": "20.00",
+    "discountType": "percent",
+    "discountAmount": "68.40",
+    "gstEnabled": true,
+    "gstRate": 18,
+    "gstAmount": "49.25",
+    "finalTotal": "322.85",
+    "grandTotal": "322.85"
+  },
+  {
+    "id": 1773981528447,
+    "timestamp": "2026-03-20T04:38:48.447Z",
+    "items": {
+      "sandwich": {
+        "price": 99,
+        "quantity": 1
+      }
+    },
+    "subtotal": "99.00",
+    "discount": "0.00",
+    "discountType": "percent",
+    "discountAmount": "0.00",
+    "gstEnabled": false,
+    "gstRate": 0,
+    "gstAmount": "0.00",
+    "finalTotal": "99.00",
+    "grandTotal": "99.00"
+  },
+  {
+    "id": 1773982968158,
+    "timestamp": "2026-03-20T05:02:48.158Z",
+    "items": {
+      "burger": {
+        "price": 149,
+        "quantity": 1
+      }
+    },
+    "subtotal": "149.00",
+    "discount": "0.00",
+    "discountType": "percent",
+    "discountAmount": "0.00",
+    "gstEnabled": false,
+    "gstRate": 0,
+    "gstAmount": "0.00",
+    "finalTotal": "149.00",
+    "grandTotal": "149.00"
+  },
+  {
+    "id": 1773983056451,
+    "timestamp": "2026-03-20T05:04:16.451Z",
+    "items": {
+      "burger": {
+        "price": 149,
+        "quantity": 1
+      }
+    },
+    "subtotal": "149.00",
+    "discount": "0.00",
+    "discountType": "percent",
+    "discountAmount": "0.00",
+    "gstEnabled": false,
+    "gstRate": 0,
+    "gstAmount": "0.00",
+    "finalTotal": "149.00",
+    "grandTotal": "149.00"
+  },
+  {
+    "id": 1773983086187,
+    "timestamp": "2026-03-20T05:04:46.187Z",
+    "items": {
+      "burger": {
+        "price": 149,
+        "quantity": 1
+      }
+    },
+    "subtotal": "149.00",
+    "discount": "0.00",
+    "discountType": "percent",
+    "discountAmount": "0.00",
+    "gstEnabled": false,
+    "gstRate": 0,
+    "gstAmount": "0.00",
+    "finalTotal": "149.00",
+    "grandTotal": "149.00"
+  }
+]
