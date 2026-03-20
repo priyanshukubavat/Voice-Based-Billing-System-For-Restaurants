@@ -92,6 +92,14 @@ A modern, web-based single-page application (SPA) that revolutionizes restaurant
 - **Checkout:** "Submit order", "Print invoice", "Download PDF"
 - **Navigation:** "Go to dashboard", "Open transactions"
 
+## Roadmap
+
+- [ ] Add tests for API routes and validators (orders, dashboard).
+- [ ] Improve voice-command NLP parser for edge cases and natural language variations.
+- [ ] Add authentication + role-based UI (admin, cashier).
+- [ ] Add monthly/yearly analytics and export options.
+- [ ] Add Docker setup (backend + frontend service containers).
+
 ## Note
 
 Ensure your application is served over `localhost` or a secure `https://` connection to permit the browser's Microphone access under strict browser security policies.
