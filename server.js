@@ -40,6 +40,16 @@ app.use(express.static(path.join(__dirname)));
 // ── Initialize orders file ─────────────────────────────────────────
 if (!fs.existsSync(ORDERS_FILE)) {
     fs.writeFileSync(ORDERS_FILE, JSON.stringify([], null, 2));
+} else {
+    try {
+        const current = JSON.parse(fs.readFileSync(ORDERS_FILE, 'utf-8'));
+        if (!Array.isArray(current)) {
+            throw new Error('Invalid orders format');
+        }
+    } catch (err) {
+        // Recreate file with an empty order array if the JSON is corrupted
+        fs.writeFileSync(ORDERS_FILE, JSON.stringify([], null, 2));
+    }
 }
 
 // ───────────────────────────────────────────────────────────────────
