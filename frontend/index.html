@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Billing</title>
+    <meta name="description" content="Voice-Based Billing System for Restaurants — hands-free counter service.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
+    <!-- jsPDF for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- Chart.js for sales dashboard -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+    <!-- Toast -->
+    <div id="toast" class="toast" aria-live="polite"></div>
+
+    <!-- ===== APP SHELL ===== -->
+    <div class="app-shell">
+
+        <!-- ===== NEW NAVBAR ===== -->
+        <nav class="navbar">
+            <div class="navbar-container">
+                <div class="navbar-left">
+                    <div class="brand-logo">VB</div>
+                    <span class="brand-name">Voice Billing</span>
+                </div>
+                
+                <!-- Desktop Nav -->
+                <div class="navbar-right">
+                    <ul class="nav-links">
+                        <li>
+                            <a class="nav-link active" href="#home" data-page="home">
+                                <i data-lucide="home"></i>
+                                <span>Home</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="nav-link" href="#order" data-page="order">
+                                <i data-lucide="shopping-cart"></i>
+                                <span>New Order</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="nav-link" href="#transactions" data-page="transactions">
+                                <i data-lucide="history"></i>
+                                <span>Transactions</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="nav-link" href="#dashboard" data-page="dashboard">
+                                <i data-lucide="bar-chart-2"></i>
+                                <span>Dashboard</span>
+                            </a>
+                        </li>
+                    </ul>
+                    
+                    <!-- Hamburger Menu (Mobile) -->
+                    <button id="menu-toggle" class="menu-toggle" aria-label="Toggle menu">
+                        <span class="hamburger"></span>
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Mobile Drawer -->
+        <div id="mobile-drawer" class="mobile-drawer">
+            <div class="drawer-header">
+                <div class="brand-logo">VB</div>
+                <span class="brand-name">Voice Billing</span>
+                <button id="close-drawer" class="close-drawer">&times;</button>
+            </div>
+            <ul class="drawer-links">
+                <li>
+                    <a class="nav-link active" href="#home" data-page="home">
+                        <i data-lucide="home"></i>
+                        <span>Home</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="nav-link" href="#order" data-page="order">
+                        <i data-lucide="shopping-cart"></i>
+                        <span>New Order</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="nav-link" href="#transactions" data-page="transactions">
+                        <i data-lucide="history"></i>
+                        <span>Transactions</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="nav-link" href="#dashboard" data-page="dashboard">
+                        <i data-lucide="bar-chart-2"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div id="drawer-overlay" class="drawer-overlay"></div>
+
+        <!-- ===== PAGE VIEWS ===== -->
+        <main class="page-area">
+
+            <!-- ── PAGE: HOME ── -->
+            <section class="page" id="page-home">
+                <div class="home-hero">
+                    <div class="hero-logo">VB</div>
+                    <h1 class="hero-title">Voice Billing</h1>
+                    <p class="hero-sub">Hands-free counter service for restaurants.<br>Speak naturally to build and complete orders.</p>
+                    <a class="hero-cta" href="#order" data-page="order">
+                        Start New Order
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                    </a>
+                </div>
+
+                <!-- Live Stats -->
+                <div class="stats-strip">
+                    <div class="stat-card">
+                        <span class="stat-value" id="stat-cart-items">0</span>
+                        <span class="stat-label">Items in Cart</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value" id="stat-cart-total">₹0.00</span>
+                        <span class="stat-label">Cart Total</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value" id="stat-order-count">—</span>
+                        <span class="stat-label">Orders Today</span>
+                    </div>
+                </div>
+
+                <!-- Nav Cards -->
+                <div class="home-cards">
+                    <a class="home-card" href="#order" data-page="order">
+                        <div class="home-card-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                        </div>
+                        <h3>New Order</h3>
+                        <p>Use your voice or tap menu items to build and complete a bill.</p>
+                        <span class="card-arrow">→</span>
+                    </a>
+                    <a class="home-card" href="#order" data-page="order">
+                        <div class="home-card-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
+                        </div>
+                        <h3>Quick Menu</h3>
+                        <p>Browse all available items and tap to instantly add them to the current order.</p>
+                        <span class="card-arrow">→</span>
+                    </a>
+                    <a class="home-card" href="#transactions" data-page="transactions">
+                        <div class="home-card-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                        </div>
+                        <h3>Transactions</h3>
+                        <p>Review completed and cancelled orders with full item and total breakdown.</p>
+                        <span class="card-arrow">→</span>
+                    </a>
+                </div>
+
+                <!-- Voice Commands Cheatsheet -->
+                <div class="cheatsheet-card">
+                    <h4 class="cheatsheet-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                        Voice Command Examples
+                    </h4>
+                    <div class="cheatsheet-grid">
+                        <div class="cheat-item"><span class="cmd">"Add 2 burgers"</span><span>adds items</span></div>
+                        <div class="cheat-item"><span class="cmd">"Remove 1 fries"</span><span>removes items</span></div>
+                        <div class="cheat-item"><span class="cmd">"Clear bill"</span><span>resets order</span></div>
+                        <div class="cheat-item"><span class="cmd">"Complete payment"</span><span>submits order</span></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ── PAGE: NEW ORDER ── -->
+            <section class="page" id="page-order">
+                <div class="page-header">
+                    <div>
+                        <h2 class="page-title">New Order</h2>
+                        <p class="page-sub">Use your voice or tap a menu item to start billing</p>
+                    </div>
+                </div>
+
+                <div class="order-layout">
+                    <!-- Left: Voice + Menu -->
+                    <div class="order-left">
+                        <!-- Voice Capture -->
+                        <div class="panel">
+                            <h3 class="panel-label">VOICE CAPTURE</h3>
+                            <div class="voice-capture-box">
+                                <div class="example-phrases">
+                                    <span class="phrase-chip">"2 margherita pizza"</span>
+                                    <span class="phrase-chip">"1 coke and 1 fries"</span>
+                                    <span class="phrase-chip">"remove last item"</span>
+                                </div>
+                                <div class="mic-row">
+                                    <button id="mic-btn" class="mic-btn" title="Click to start/stop listening">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                                            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                                            <line x1="12" y1="19" x2="12" y2="23"/>
+                                            <line x1="8" y1="23" x2="16" y2="23"/>
+                                        </svg>
+                                    </button>
+                                    <div class="transcript-area">
+                                        <div class="transcript-meta">
+                                            <span>Recognized Speech</span>
+                                            <span id="recognition-lang" class="lang-badge">Waiting</span>
+                                        </div>
+                                        <div id="transcript" class="transcript-text">Tap microphone and speak</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Menu -->
+                        <div class="panel">
+                            <div class="panel-header-row">
+                                <h3 class="panel-label">QUICK MENU</h3>
+                                <span class="hint-text">Tap to add</span>
+                            </div>
+                            <div id="quick-menu-grid" class="quick-menu-grid"></div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Current Order -->
+                    <div class="order-right">
+                        <div class="panel order-panel">
+                            <div class="order-head">
+                                <div>
+                                    <h3 class="panel-label">CURRENT ORDER</h3>
+                                    <span id="item-count-label" class="item-count">0 items</span>
+                                </div>
+                                <div class="order-head-actions">
+                                    <button id="clear-btn" class="btn-ghost">Clear</button>
+                                    <span class="customer-tag">Walk-in</span>
+                                </div>
+                            </div>
+
+                            <div class="bill-table-wrapper">
+                                <table class="bill-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ITEM</th>
+                                            <th>QTY</th>
+                                            <th>PRICE</th>
+                                            <th class="text-right">TOTAL</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="bill-body">
+                                        <tr class="empty-state">
+                                            <td colspan="4">Cart is empty. Make a selection.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Discount Row -->
+                            <div class="billing-extras">
+                                <div class="discount-row">
+                                    <label class="extras-label">Discount</label>
+                                    <div class="discount-input-group">
+                                        <input type="number" id="discount-input" class="discount-input" min="0" step="0.01" placeholder="0" />
+                                        <div class="discount-type-toggle">
+                                            <button id="discount-pct-btn" class="disc-type-btn active" data-type="percent">%</button>
+                                            <button id="discount-fixed-btn" class="disc-type-btn" data-type="fixed">₹</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- GST Toggle Row -->
+                                <div class="gst-row">
+                                    <span class="extras-label">GST (18%)</span>
+                                    <div class="gst-toggle-wrap">
+                                        <label class="toggle-switch" id="gst-toggle-label">
+                                            <input type="checkbox" id="gst-toggle" />
+                                            <span class="toggle-track"><span class="toggle-thumb"></span></span>
+                                        </label>
+                                        <span id="gst-status-text" class="gst-status-text">OFF</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="order-totals">
+                                <div class="totals-rows">
+                                    <div class="total-row">
+                                        <span>Subtotal</span>
+                                        <span id="subtotal-el">₹0.00</span>
+                                    </div>
+                                    <div class="total-row" id="discount-row-display" style="display:none">
+                                        <span>Discount</span>
+                                        <span id="discount-amount-el" class="discount-value">-₹0.00</span>
+                                    </div>
+                                    <div class="total-row" id="gst-row-display" style="display:none">
+                                        <span>GST (18%)</span>
+                                        <span id="gst-amount-el">₹0.00</span>
+                                    </div>
+                                </div>
+                                <div class="total-due-block">
+                                    <span class="total-due-label">TOTAL DUE</span>
+                                    <span id="grand-total" class="total-due-amount">₹0.00</span>
+                                </div>
+                            </div>
+
+                            <div class="order-actions">
+                                <button id="cancel-btn" class="btn-cancel">Cancel Order</button>
+                                <button id="submit-btn" class="btn-complete">
+                                    Complete Payment
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                                </button>
+                            </div>
+                            <div class="print-actions">
+                                <button id="print-btn" class="btn-print">
+                                    <i data-lucide="printer"></i> Print Bill
+                                </button>
+                                <button id="pdf-btn" class="btn-pdf">
+                                    <i data-lucide="download"></i> Download PDF
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ── PAGE: TRANSACTIONS ── -->
+            <section class="page" id="page-transactions">
+                <div class="page-header">
+                    <div>
+                        <h2 class="page-title">Transactions</h2>
+                        <p class="page-sub">History of all completed and cancelled orders</p>
+                    </div>
+                    <button id="refresh-transactions-btn" class="btn-ghost">↻ Refresh</button>
+                </div>
+
+                <!-- Filter Bar -->
+                <div class="tx-filter-bar">
+                    <div class="search-wrap">
+                        <i data-lucide="search" class="search-icon"></i>
+                        <input type="text" id="tx-search" class="search-input" placeholder="Search by order ID or item…" />
+                    </div>
+                    <select id="tx-date-filter" class="filter-select">
+                        <option value="all">All Time</option>
+                        <option value="today">Today</option>
+                        <option value="7days">Last 7 Days</option>
+                    </select>
+                    <select id="tx-sort" class="filter-select">
+                        <option value="newest">Newest First</option>
+                        <option value="oldest">Oldest First</option>
+                        <option value="asc">Amount: Low → High</option>
+                        <option value="desc">Amount: High → Low</option>
+                    </select>
+                </div>
+
+                <div class="transactions-panel panel">
+                    <div id="transactions-content" class="transactions-content">
+                        <div class="tx-empty">Loading orders…</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ── PAGE: DASHBOARD ── -->
+            <section class="page" id="page-dashboard">
+                <div class="page-header">
+                    <div>
+                        <h2 class="page-title">Sales Dashboard</h2>
+                        <p class="page-sub">Today's performance and sales overview</p>
+                    </div>
+                    <button id="refresh-dashboard-btn" class="btn-ghost">↻ Refresh</button>
+                </div>
+
+                <!-- Stat Cards -->
+                <div class="dash-stats-grid">
+                    <div class="dash-stat-card">
+                        <div class="dash-stat-icon blue"><i data-lucide="indian-rupee"></i></div>
+                        <div class="dash-stat-body">
+                            <span class="dash-stat-label">Total Sales Today</span>
+                            <span class="dash-stat-value" id="dash-total-sales">₹—</span>
+                        </div>
+                    </div>
+                    <div class="dash-stat-card">
+                        <div class="dash-stat-icon green"><i data-lucide="shopping-bag"></i></div>
+                        <div class="dash-stat-body">
+                            <span class="dash-stat-label">Orders Today</span>
+                            <span class="dash-stat-value" id="dash-total-orders">—</span>
+                        </div>
+                    </div>
+                    <div class="dash-stat-card">
+                        <div class="dash-stat-icon purple"><i data-lucide="trending-up"></i></div>
+                        <div class="dash-stat-body">
+                            <span class="dash-stat-label">Avg Order Value</span>
+                            <span class="dash-stat-value" id="dash-avg-value">₹—</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart + Top Items -->
+                <div class="dash-main-grid">
+                    <!-- Last 7 Days Chart -->
+                    <div class="panel dash-chart-panel">
+                        <div class="panel-header">
+                            <span class="panel-title">Sales — Last 7 Days</span>
+                        </div>
+                        <div class="dash-chart-wrap">
+                            <canvas id="sales-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Top Selling Items -->
+                    <div class="panel dash-top-panel">
+                        <div class="panel-header">
+                            <span class="panel-title">Top Selling Items</span>
+                            <span class="panel-sub">All time</span>
+                        </div>
+                        <div id="dash-top-items" class="dash-top-items">
+                            <div class="tx-empty">Loading…</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
