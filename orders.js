@@ -1,136 +1,91 @@
 /**
- * routes/orders.js
- * Express router for all /api/orders endpoints.
- * Uses validator to validate incoming payloads.
+ * validators/orders.js
+ * Pure validation functions for order-related request bodies.
+ * Returns { valid: boolean, message: string }.
  */
 
-const express = require('express');
-const fs      = require('fs');
-const path    = require('path');
-const { validateOrderBody } = require('../validators/orders');
+const ITEM_NAME_MAX_LEN = 60;
+const ALLOWED_DISCOUNT_TYPES = ['percent', 'fixed'];
 
-const router     = express.Router();
-const ORDERS_FILE = path.join(__dirname, '..', 'orders.json');
+/**
+ * Validates the POST /api/orders body.
+ * @param {Object} body - Parsed request body.
+ * @returns {{ valid: boolean, message: string }}
+ */
+function validateOrderBody(body) {
+    const {
+        items,
+        subtotal,
+        discount = 0,
+        discountType = 'percent',
+        gstEnabled,
+        gstRate,
+    } = body;
 
-function readOrders()         { return JSON.parse(fs.readFileSync(ORDERS_FILE, 'utf-8')); }
-function writeOrders(orders)  { fs.writeFileSync(ORDERS_FILE, JSON.stringify(orders, null, 2)); }
-
-// ──────────────────────────────────────────────────────────────────
-// GET /api/orders
-// Supports ?search=&dateFilter=today|7days&sort=asc|desc
-// ──────────────────────────────────────────────────────────────────
-router.get('/', (req, res, next) => {
-    try {
-        let orders = readOrders();
-        const { search, dateFilter, sort } = req.query;
-
-        if (dateFilter) {
-            const now   = new Date();
-            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-            orders = orders.filter(o => {
-                const d = new Date(o.timestamp);
-                if (dateFilter === 'today') return d >= today;
-                if (dateFilter === '7days') {
-                    const week = new Date(today);
-                    week.setDate(week.getDate() - 6);
-                    return d >= week;
-                }
-                return true;
-            });
-        }
-
-        if (search) {
-            const q = search.toLowerCase();
-            orders = orders.filter(o => {
-                const idMatch   = String(o.id).includes(q);
-                const itemMatch = Object.keys(o.items || {}).some(k => k.toLowerCase().includes(q));
-                return idMatch || itemMatch;
-            });
-        }
-
-        if (sort === 'asc' || sort === 'desc') {
-            orders = [...orders].sort((a, b) => {
-                const va = parseFloat(a.finalTotal || a.grandTotal || 0);
-                const vb = parseFloat(b.finalTotal || b.grandTotal || 0);
-                return sort === 'asc' ? va - vb : vb - va;
-            });
-        }
-
-        res.json(orders);
-    } catch (err) {
-        next(err);
+    // ── items ──────────────────────────────────────────────────────
+    if (!items || typeof items !== 'object' || Array.isArray(items)) {
+        return fail('`items` must be a non-empty object.');
     }
-});
 
-// ──────────────────────────────────────────────────────────────────
-// POST /api/orders
-// Validates payload with validateOrderBody() before saving.
-// ──────────────────────────────────────────────────────────────────
-router.post('/', (req, res, next) => {
-    try {
-        // Server-side validation (security layer)
-        const { valid, message } = validateOrderBody(req.body);
-        if (!valid) {
-            return res.status(400).json({ success: false, message });
+    const itemKeys = Object.keys(items);
+    if (itemKeys.length === 0) {
+        return fail('Order must contain at least one item.');
+    }
+
+    for (const name of itemKeys) {
+        // Item name: string, max length
+        if (typeof name !== 'string' || name.trim().length === 0) {
+            return fail(`Item name must be a non-empty string.`);
+        }
+        if (name.length > ITEM_NAME_MAX_LEN) {
+            return fail(`Item name "${name}" exceeds max length of ${ITEM_NAME_MAX_LEN}.`);
         }
 
-        const {
-            items,
-            subtotal,
-            discount       = 0,
-            discountType   = 'percent',
-            discountAmount = 0,
-            gstEnabled     = false,
-            gstRate        = 18,
-            gstAmount      = 0,
-            finalTotal,
-        } = req.body;
+        const { quantity, price } = items[name];
 
-        const orders   = readOrders();
-        const newOrder = {
-            id:             Date.now(),
-            timestamp:      new Date().toISOString(),
-            items,
-            subtotal:       parseFloat(subtotal).toFixed(2),
-            discount:       parseFloat(discount).toFixed(2),
-            discountType,
-            discountAmount: parseFloat(discountAmount).toFixed(2),
-            gstEnabled:     Boolean(gstEnabled),
-            gstRate:        gstEnabled ? parseFloat(gstRate) : 0,
-            gstAmount:      parseFloat(gstAmount).toFixed(2),
-            finalTotal:     parseFloat(finalTotal).toFixed(2),
-            grandTotal:     parseFloat(finalTotal).toFixed(2),
-        };
-
-        orders.push(newOrder);
-        writeOrders(orders);
-
-        res.status(201).json({ success: true, order: newOrder });
-    } catch (err) {
-        next(err);
-    }
-});
-
-// ──────────────────────────────────────────────────────────────────
-// DELETE /api/orders/:id
-// ──────────────────────────────────────────────────────────────────
-router.delete('/:id', (req, res, next) => {
-    const orderId = parseInt(req.params.id, 10);
-    if (isNaN(orderId)) {
-        return res.status(400).json({ success: false, message: 'Invalid order ID.' });
-    }
-    try {
-        let orders       = readOrders();
-        const initial    = orders.length;
-        orders           = orders.filter(o => o.id !== orderId);
-        if (orders.length === initial) {
-            return res.status(404).json({ success: false, message: 'Order not found.' });
+        // Quantity: positive integer
+        if (!Number.isInteger(Number(quantity)) || Number(quantity) < 1) {
+            return fail(`Quantity for "${name}" must be a positive integer.`);
         }
-        writeOrders(orders);
-        res.json({ success: true });
-    } catch (err) {
-        next(err);
-    }
-});
 
-module.exports = router;
+        // Price: positive number
+        const p = parseFloat(price);
+        if (isNaN(p) || p < 0) {
+            return fail(`Price for "${name}" must be a non-negative number.`);
+        }
+    }
+
+    // ── subtotal ───────────────────────────────────────────────────
+    const sub = parseFloat(subtotal);
+    if (isNaN(sub) || sub < 0) {
+        return fail('`subtotal` must be a non-negative number.');
+    }
+
+    // ── discount ───────────────────────────────────────────────────
+    const disc = parseFloat(discount);
+    if (isNaN(disc) || disc < 0) {
+        return fail('Discount cannot be negative.');
+    }
+    if (!ALLOWED_DISCOUNT_TYPES.includes(discountType)) {
+        return fail(`discountType must be one of: ${ALLOWED_DISCOUNT_TYPES.join(', ')}.`);
+    }
+    if (discountType === 'percent' && disc > 100) {
+        return fail('Percentage discount cannot exceed 100%.');
+    }
+    if (discountType === 'fixed' && disc > sub) {
+        return fail('Fixed discount cannot exceed the subtotal.');
+    }
+
+    // ── GST ────────────────────────────────────────────────────────
+    if (gstEnabled && (isNaN(parseFloat(gstRate)) || parseFloat(gstRate) < 0)) {
+        return fail('`gstRate` must be a non-negative number when GST is enabled.');
+    }
+
+    return { valid: true, message: '' };
+}
+
+function fail(message) {
+    return { valid: false, message };
+}
+
+module.exports = { validateOrderBody };
