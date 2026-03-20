@@ -32,6 +32,14 @@ function validateOrderBody(body) {
         return fail('Order must contain at least one item.');
     }
 
+    // Reject duplicate item names ignoring case and surrounding spaces
+    const normalizedNames = itemKeys.map(n => (typeof n === 'string' ? n.trim().toLowerCase() : ''));
+    const dupes = normalizedNames.filter((name, index, arr) => name && arr.indexOf(name) !== index);
+    if (dupes.length > 0) {
+        const uniqueDupes = [...new Set(dupes)];
+        return fail(`Duplicate item names are not allowed: ${uniqueDupes.join(', ')}.`);
+    }
+
     for (const name of itemKeys) {
         // Item name: string, max length
         if (typeof name !== 'string' || name.trim().length === 0) {
