@@ -95,3 +95,5 @@ A modern, web-based single-page application (SPA) that revolutionizes restaurant
 ## Note
 
 Ensure your application is served over `localhost` or a secure `https://` connection to permit the browser's Microphone access under strict browser security policies.
+
+> README updated for MS1: contains meaningful project overview, setup steps, and usage details.
